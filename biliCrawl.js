@@ -10,7 +10,7 @@
 
 
 (function() {
-    if (/t.bilibili | h.bilibili/.test(location)) {}
+    if (!/(t\.bilibili)|(h\.bilibili)/.test(location.href)) { return }
     var startBtn = document.createElement('button')
     startBtn.innerText = '开始获取评论'
     startBtn.setAttribute('style', 'position:fixed; top: 80px; left: 50px;')
