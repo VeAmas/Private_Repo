@@ -69,7 +69,7 @@
       this.transitionText.contentEditable = 'true';
       this.transitionText.id = 'translate-tool-translation-text'
       this.transitionText.className = 'js-tweet-text-container'
-      this.transitionText.style = `display: block; width: 100%; font-family: 'Microsoft Yahei'; font-weight: bold; color: #444;`;
+      this.transitionText.style = `display: block; width: 100%; font-family: 'Microsoft Yahei'; font-weight: bold; color: #444;border:none;`;
       this.transitionText.innerHTML = this.currentTweetOriginalText.innerHTML.replace(/href=\".*?\"/g, '');
       this.currentTweet.querySelector('.translate-button').after(this.transitionText)
     },
@@ -81,7 +81,7 @@
     convertTime () {
       if (!this.transitionText) { return; }
       let innerHTML = this.transitionText.innerHTML;
-      innerHTML = innerHTML.replace(/(\d{1,2})時/g, (str, v) => (+v === 0 ? v + 23 : v - 1) + '時')
+      innerHTML = innerHTML.replace(/(\d{1,2})時/g, (str, v) => (+v === 0 ? v + 23 : v - 1) + '点')
       innerHTML = innerHTML.replace(/(\d{1,2}):(\d\d)/g, (str, v, u) => (+v === 0 ? v + 23 : +v - 1) + ':' + u)
       this.transitionText.innerHTML = innerHTML
     },
