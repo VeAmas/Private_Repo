@@ -66,11 +66,16 @@
     resetTranslationText () {
       this.transitionText && this.transitionText.remove();
       this.transitionText = document.createElement('div');
+      this.transitionText.addEventListener('blur', (e) => {
+        sessionStorage[this.currentTweet.querySelector('.metadata span').innerText] = this.transitionText.innerHTML;
+      })
       this.transitionText.contentEditable = 'true';
       this.transitionText.id = 'translate-tool-translation-text'
       this.transitionText.className = 'js-tweet-text-container'
       this.transitionText.style = `display: block; width: 100%; font-family: 'Microsoft Yahei'; font-weight: bold; color: #444;border:none;`;
       this.transitionText.innerHTML = this.currentTweetOriginalText.innerHTML.replace(/href=\".*?\"/g, '');
+      let _innerHTML
+      if (_innerHTML = sessionStorage[this.currentTweet.querySelector('.metadata span').innerText]) { this.transitionText.innerHTML = _innerHTML; }
       this.currentTweet.querySelector('.translate-button').after(this.transitionText)
     },
     toggleConversationLink () {
