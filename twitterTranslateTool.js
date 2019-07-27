@@ -131,7 +131,8 @@
         this.currentTweetOriginalTextWrapper = this.currentTweetHeader.nextSibling
         this.currentTweetOriginalText = this.currentTweetOriginalTextWrapper && this.currentTweetOriginalTextWrapper.firstChild
         let article = this.currentTweet.querySelector('li[role="listitem"]').parentNode
-        this.timetag = article.children[article.children.length - 3].firstChild.firstChild.innerText
+        this.timetagNode = article.children[article.children.length - 3]
+        this.timetag = this.timetagNode.firstChild.firstChild.innerText
       } else {
         DOM.style.display = 'none';
       }
@@ -186,6 +187,11 @@
       });
     },
     stylizeElement () {
+    	let svg = this.currentTweet.querySelector('svg')
+    	svg && svg.remove()
+    	let group = this.currentTweet.querySelector('[role="group"]')
+    	group && group.remove()
+    	this.timetagNode.style="margin-top:10px;"
     	let list = [];
     	const traversal = node => {
     		list.push(node)
@@ -193,10 +199,6 @@
     	}
     	traversal(this.currentTweet)
     	list.forEach(v => this.addStyle(v))
-    	let svg = this.currentTweet.querySelector('svg')
-    	svg && svg.remove()
-    	let group = this.currentTweet.querySelector('[role="group"]')
-    	group && group.remove()
     },
     addStyle (element) {
     	const parents = (node, parent) => {
