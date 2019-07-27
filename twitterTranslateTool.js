@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Twitter Translate
 // @namespace    http://tampermonkey.net/
-// @version      0.1
+// @version      0.2
 // @description  try to take over the world!
 // @author       Amas.
 // @match        https://twitter.com/*
@@ -42,6 +42,78 @@
     </div>
   </div>
   `
+
+  let styleList = [
+	"fontSize", 
+	"fontFamily", 
+	"paddingBottom", 
+	"fontWeight", 
+	"color", 
+	"overflowWrap", 
+	"minWidth", 
+	"lineHeight", 
+	"position", 
+	"border", 
+	"boxSizing", 
+	"color", 
+	"display", 
+	"font", 
+	"marginBottom", 
+	"marginLeft", 
+	"marginRight", 
+	"marginTop", 
+	"paddingBottom", 
+	"paddingLeft", 
+	"paddingRight", 
+	"paddingTop", 
+	"whiteSpace", 
+	"wordWrap", 
+	"backgroundImage", 
+	"zIndex", 
+	"backgroundRepeat", 
+	"backgroundColor", 
+	"width", 
+	"height", 
+	"position", 
+	"top", 
+	"right", 
+	"left", 
+	"bottom", 
+	"display", 
+	"MsFlexAlign", 
+	"MsFlexDirection", 
+	"MsFlexNegative", 
+	"MsFlexPreferredSize", 
+	"WebkitAlignItems", 
+	"WebkitBoxAlign", 
+	"WebkitBoxDirection", 
+	"WebkitBoxOrient", 
+	"WebkitFlexBasis", 
+	"WebkitFlexDirection", 
+	"WebkitFlexShrink", 
+	"alignItems", 
+	"border", 
+	"boxSizing", 
+	"flexBasis", 
+	"flexDirection", 
+	"flexShrink", 
+	"marginBottom", 
+	"marginLeft", 
+	"marginRight", 
+	"marginTop", 
+	"minHeight", 
+	"minWidth", 
+	"paddingBottom", 
+	"paddingLeft", 
+	"paddingRight", 
+	"paddingTop"
+  ];
+
+  (function () {
+  	let obj = {}
+  	styleList = styleList.filter(v => !obj[v] && (obj[v] = 1))
+  })();
+
   DOM.style.display = 'none'
   document.body.append(style);
   document.body.append(DOM);
@@ -54,8 +126,11 @@
       this.activated = oldHref.indexOf('/status') > -1
       if (this.activated) {
         DOM.style.display = 'block';
-        this.currentTweet = document.querySelector('.tweet.permalink-tweet')
-        this.currentTweetOriginalText = this.currentTweet && this.currentTweet.querySelector('.js-tweet-text-container')
+        this.currentTweet = (document.querySelector('article[data-testid="tweetDetail"]') || {}).parentNode
+        this.currentTweetHeader = this.currentTweet && this.currentTweet.querySelector('li[role="listitem"]')
+        this.currentTweetOriginalTextWrapper = this.currentTweetHeader.nextSibling
+        this.currentTweetOriginalText = this.currentTweetOriginalTextWrapper && this.currentTweetOriginalTextWrapper.firstChild
+        this.timetag = this.currentTweet.querySelector('li[role="listitem"]').nextSibling.nextSibling.firstChild.firstChild.innerText
       } else {
         DOM.style.display = 'none';
       }
@@ -67,16 +142,18 @@
       this.transitionText && this.transitionText.remove();
       this.transitionText = document.createElement('div');
       this.transitionText.addEventListener('blur', (e) => {
-        sessionStorage[this.currentTweet.querySelector('.metadata span').innerText] = this.transitionText.innerHTML;
+        sessionStorage[this.timetag] = this.transitionText.firstChild.innerHTML;
       })
       this.transitionText.contentEditable = 'true';
       this.transitionText.id = 'translate-tool-translation-text'
-      this.transitionText.className = 'js-tweet-text-container'
+      this.transitionText.className = this.currentTweetOriginalTextWrapper.className
       this.transitionText.style = `display: block; width: 100%; font-family: 'Microsoft Yahei'; font-weight: bold; color: #444;border:none;`;
-      this.transitionText.innerHTML = this.currentTweetOriginalText.innerHTML.replace(/href=\".*?\"/g, '');
+      this.transitionText.innerHTML = this.currentTweetOriginalText.outerHTML.replace(/href=\".*?\"/g, '');
+      this.currentTweetOriginalTextWrapper.after(this.transitionText)
       let _innerHTML
-      if (_innerHTML = sessionStorage[this.currentTweet.querySelector('.metadata span').innerText]) { this.transitionText.innerHTML = _innerHTML; }
-      this.currentTweet.querySelector('.translate-button').after(this.transitionText)
+      if (_innerHTML = sessionStorage[this.timetag]) {
+      	this.transitionText.firstChild.innerHTML = _innerHTML;
+      }
     },
     toggleConversationLink () {
       document.querySelector('#toggleConversationLink').checked ?
@@ -91,6 +168,7 @@
       this.transitionText.innerHTML = innerHTML
     },
     export () {
+      this.stylizeElement()
       html2canvas(this.currentTweet, {
         useCORS: true,
         logging: false
@@ -98,13 +176,47 @@
         canvas.toBlob((img) => {
           var url = URL.createObjectURL(img);
           var link = document.createElement("a");
-          link.download = this.currentTweet.querySelector('.metadata span').innerText.replace(':', ' ') + '.png';
+          link.download = this.timetag.replace(':', ' ') + '.png';
           link.href = url;
           var event = document.createEvent("MouseEvent");
           event.initEvent("click", !0, !0, window, 1, 0, 0, 0, 0, !1, !1, !1, !1, 0, null);
           link.dispatchEvent(event);
         });
       });
+    },
+    stylizeElement () {
+    	let list = [];
+    	const traversal = node => {
+    		list.push(node)
+    		Array.prototype.forEach.call(node.children, traversal)
+    	}
+    	traversal(this.currentTweet)
+    	list.forEach(v => this.addStyle(v))
+    	let svg = this.currentTweet.querySelector('svg')
+    	svg && svg.remove()
+    	let group = this.currentTweet.querySelector('[role="group"]')
+    	group && group.remove()
+    },
+    addStyle (element) {
+    	const parents = (node, parent) => {
+    		while (node.parentNode) {
+    			if (node === parent) { return true; }
+    			node = node.parentNode
+    		}
+    		return false;
+    	}
+    	let map = window.getComputedStyle(element)
+    	let style = '';
+    	styleList.forEach(v => {
+    		style += `${v.replace(/[A-Z]/g, (a) => '-' + a.toLowerCase())}:${map[v]};`
+    	})
+    	if (map['backgroundImage'].indexOf('svg') > -1 && (parents(element, this.currentTweetOriginalText) || parents(element, this.transitionText))) {
+    		style += 'background-size: 220% 220%;background-position: 0% -10%;'
+    	}
+    	if (map['backgroundImage'].indexOf('svg') > -1 && parents(element, this.currentTweetHeader)) {
+    		style += 'background-size: 280% 280%;background-position: 0% 0%;'
+    	}
+    	element.setAttribute('style', style);
     }
   }
   document.getElementById('toggleShowOriginalText').addEventListener('click', TranslateTool.toggleShowOriginalText.bind(TranslateTool));
@@ -112,5 +224,5 @@
   document.getElementById('convertTime').addEventListener('click', TranslateTool.convertTime.bind(TranslateTool));
   document.getElementById('resetTranslationText').addEventListener('click', TranslateTool.resetTranslationText.bind(TranslateTool));
   document.getElementById('export').addEventListener('click', TranslateTool.export.bind(TranslateTool));
-  setTimeout(() => {window.TranslateTool.isActivated();}, 500)
+  setTimeout(() => {window.TranslateTool.isActivated();}, 2000)
 })();
