@@ -130,7 +130,8 @@
         this.currentTweetHeader = this.currentTweet && this.currentTweet.querySelector('li[role="listitem"]')
         this.currentTweetOriginalTextWrapper = this.currentTweetHeader.nextSibling
         this.currentTweetOriginalText = this.currentTweetOriginalTextWrapper && this.currentTweetOriginalTextWrapper.firstChild
-        this.timetag = this.currentTweet.querySelector('li[role="listitem"]').nextSibling.nextSibling.firstChild.firstChild.innerText
+        let article = this.currentTweet.querySelector('li[role="listitem"]').parentNode
+        this.timetag = article.children[article.children.length - 3].firstChild.firstChild.innerText
       } else {
         DOM.style.display = 'none';
       }
