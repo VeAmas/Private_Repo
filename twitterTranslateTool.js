@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Twitter Translate
 // @namespace    http://tampermonkey.net/
-// @version      0.2
+// @version      0.3
 // @description  try to take over the world!
 // @author       Amas.
 // @match        https://twitter.com/*
@@ -44,68 +44,68 @@
   `
 
   let styleList = [
-	"fontSize", 
-	"fontFamily", 
-	"paddingBottom", 
-	"fontWeight", 
-	"color", 
-	"overflowWrap", 
-	"minWidth", 
-	"lineHeight", 
-	"position", 
-	"border", 
-	"boxSizing", 
-	"color", 
-	"display", 
-	"font", 
-	"marginBottom", 
-	"marginLeft", 
-	"marginRight", 
-	"marginTop", 
-	"paddingBottom", 
-	"paddingLeft", 
-	"paddingRight", 
-	"paddingTop", 
-	"whiteSpace", 
-	"wordWrap", 
-	"backgroundImage", 
-	"zIndex", 
-	"backgroundRepeat", 
-	"backgroundColor", 
-	"width", 
-	"height", 
-	"position", 
-	"top", 
-	"right", 
-	"left", 
-	"bottom", 
-	"display", 
-	"MsFlexAlign", 
-	"MsFlexDirection", 
-	"MsFlexNegative", 
-	"MsFlexPreferredSize", 
-	"WebkitAlignItems", 
-	"WebkitBoxAlign", 
-	"WebkitBoxDirection", 
-	"WebkitBoxOrient", 
-	"WebkitFlexBasis", 
-	"WebkitFlexDirection", 
-	"WebkitFlexShrink", 
-	"alignItems", 
-	"border", 
-	"boxSizing", 
-	"flexBasis", 
-	"flexDirection", 
-	"flexShrink", 
-	"marginBottom", 
-	"marginLeft", 
-	"marginRight", 
-	"marginTop", 
-	"minHeight", 
-	"minWidth", 
-	"paddingBottom", 
-	"paddingLeft", 
-	"paddingRight", 
+	"fontSize",
+	"fontFamily",
+	"paddingBottom",
+	"fontWeight",
+	"color",
+	"overflowWrap",
+	"minWidth",
+	"lineHeight",
+	"position",
+	"border",
+	"boxSizing",
+	"color",
+	"display",
+	"font",
+	"marginBottom",
+	"marginLeft",
+	"marginRight",
+	"marginTop",
+	"paddingBottom",
+	"paddingLeft",
+	"paddingRight",
+	"paddingTop",
+	"whiteSpace",
+	"wordWrap",
+	"backgroundImage",
+	"zIndex",
+	"backgroundRepeat",
+	"backgroundColor",
+	"width",
+	"height",
+	"position",
+	"top",
+	"right",
+	"left",
+	"bottom",
+	"display",
+	"MsFlexAlign",
+	"MsFlexDirection",
+	"MsFlexNegative",
+	"MsFlexPreferredSize",
+	"WebkitAlignItems",
+	"WebkitBoxAlign",
+	"WebkitBoxDirection",
+	"WebkitBoxOrient",
+	"WebkitFlexBasis",
+	"WebkitFlexDirection",
+	"WebkitFlexShrink",
+	"alignItems",
+	"border",
+	"boxSizing",
+	"flexBasis",
+	"flexDirection",
+	"flexShrink",
+	"marginBottom",
+	"marginLeft",
+	"marginRight",
+	"marginTop",
+	"minHeight",
+	"minWidth",
+	"paddingBottom",
+	"paddingLeft",
+	"paddingRight",
 	"paddingTop"
   ];
 
@@ -126,12 +126,12 @@
       this.activated = oldHref.indexOf('/status') > -1
       if (this.activated) {
         DOM.style.display = 'block';
-        this.currentTweet = (document.querySelector('article[data-testid="tweetDetail"]') || {}).parentNode
-        this.currentTweetHeader = this.currentTweet && this.currentTweet.querySelector('li[role="listitem"]')
+        this.currentTweet = (document.querySelector('article') || {}).parentNode
+        let article = this.currentTweet.children[0]
+        this.currentTweetHeader = article.children[0].children[1]
         this.currentTweetOriginalTextWrapper = this.currentTweetHeader.nextSibling
         this.currentTweetOriginalText = this.currentTweetOriginalTextWrapper && this.currentTweetOriginalTextWrapper.firstChild
-        let article = this.currentTweet.querySelector('li[role="listitem"]').parentNode
-        this.timetagNode = article.children[article.children.length - 3]
+        this.timetagNode = article.children[0].children[article.children[0].children.length - 3]
         this.timetag = this.timetagNode.firstChild.firstChild.innerText
       } else {
         DOM.style.display = 'none';
