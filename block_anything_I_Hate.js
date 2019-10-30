@@ -5,7 +5,7 @@
 // @description  try to take over the world!
 // @author       You
 // @match        https://d7vg.com/*
-// @match        https://*.bilibili.com/*
+// @match        https://psnine.com/*
 // @match        https://*.gcores.com/*
 
 // @grant        none
@@ -17,6 +17,7 @@
       'iPhone',
       'IPhone',
       'iphone',
+      'Mac',
       '苹果',
       'iOS',
       '\\bios',
