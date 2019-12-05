@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Twitter Translate
 // @namespace    http://tampermonkey.net/
-// @version      0.3
+// @version      0.4
 // @description  try to take over the world!
 // @author       Amas.
 // @match        https://twitter.com/*
@@ -26,7 +26,7 @@
       oldHref = location.href;
       window.TranslateTool.isActivated();
     }
-  })
+  }, 1000)
   let style = document.createElement('style');
   style.innerText = `.translate-tool{position:fixed;top:0;left:50px;z-index:10000}.translate-tool-arrow{position:absolute;top:-25px;left:0;transform:rotate(45deg);background-color:#f00;width:40px;height:40px;z-index:10}.translate-tool-arrow::after{content:'T';position:absolute;transform:rotate(-45deg);font-size:21px;margin-top:16px;color:#fff;margin-left:23px;font-weight:bold}.translate-tool-tool-bar{position:absolute;top:-240px;left:-30px;width:200px;height:200px;padding:30px 10px 10px 10px;transition:top .5s;background-color:#aaa;user-select:none}.translate-tool-arrow:hover+.translate-tool-tool-bar,.translate-tool-tool-bar:hover{top:0}.translate-tool-tool-bar input[type=checkbox]{display:none;margin:3px 3px 3px 4px;-webkit-appearance:checkbox;box-sizing:border-box;background-color:initial;cursor:default;padding:initial;border:initial}.translate-tool-tool-bar label{background-color:#FFF;padding:6px 43px 8px 9px;border-radius:5px;display:inline-block;position:relative;margin-right:30px;box-shadow:0 0 2px rgba(0,0,0,.3);height:17px;overflow:hidden;font-size:14px!important;color:#464e50;cursor:pointer}.translate-tool-tool-bar label::before{content:' ';position:absolute;background:#6ac6dd;width:0;height:100%;top:0;-webkit-transition:all .3s ease-in;transition:all .3s ease-in;left:0}.translate-tool-tool-bar input[type="checkbox"]:checked+label::before{content:' ';position:absolute;width:100%;height:100%;text-shadow:0 1px 0 rgba(0,0,0,.1);top:0;left:0}.translate-tool-tool-bar label::after{content:'';position:absolute;background:#FFF;top:4px;right:3px;width:24px;display:block;font-size:1em!important;height:16px;border-radius:3px;box-shadow:0 0 1px rgba(0,0,0,.6),inset 0 -18px 15px -10px rgba(0,0,0,.05);padding:4px 0;text-align:center;color:#496f7a}.translate-tool-tool-bar input[type="checkbox"]:checked+label::after{content:'';background-color:#6ac6dd;box-shadow:inset 0 0 0 5px #fff}.translate-tool-tool-bar label>span{position:relative;z-index:99999;font-family:adelle-sans,sans-serif;white-space:nowrap}`
   const DOM = document.createElement('div');
