@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         bilibili评论crawl
 // @namespace    http://tampermonkey.net/
-// @version      1.0
+// @version      1.1
 // @description  try to take over the world!
 // @author       Amas
 // @match        https://*.bilibili.com/*
@@ -192,12 +192,16 @@
                         startFloor = this.startFloor
                         endFloor = this.endFloor
 
-                        crawlAll(progress => {
-                            this.crawlProgress = progress
-                        }, (data) => {
-                            this.crawlProgress = 0
-                            this.allList = data.map(v => Object.assign({}, v))
-                        })
+                       Ajax.get(`https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/get_dynamic_detail?dynamic_id=${tId}`, res => {
+                           tid = JSON.parse(res).data.card.desc.rid;
+                           crawlAll(progress => {
+                               this.crawlProgress = progress
+                           }, (data) => {
+                               this.crawlProgress = 0
+                               this.allList = data.map(v => Object.assign({}, v))
+                           })
+                       })
+
                     },
                     clearDuplicated () {
                         let obj = {}
@@ -266,6 +270,22 @@
             })
         }
 
+        const Ajax={
+            get: function(url, fn) {
+                // XMLHttpRequest对象用于在后台与服务器交换数据
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', url, true);
+                xhr.onreadystatechange = function() {
+                    // readyState == 4说明请求已完成
+                    if (xhr.readyState == 4 && xhr.status == 200 || xhr.status == 304) {
+                        // 从服务器获得数据
+                        fn.call(this, xhr.responseText);
+                    }
+                };
+                xhr.send();
+            }
+        }
+
 
         /**
          * 获取所有的评论列表
@@ -275,35 +295,26 @@
          */
         const crawlAll = function (updateProgress, cb) {
             const crawl = function (pageNumber, rev) {
-                var url;
-                switch (location.href.match(/\/(\w)\.b/)[1]) {
-                    case 'h': url = `https://api.bilibili.com/x/v2/reply?callback=jQuery111308328563511816511_${new Date().getTime()}&jsonp=jsonp&pn=${pageNumber}&type=11&oid=${tId}&sort=0&ps=10`; break;
-                    case 't': url = `https://api.bilibili.com/x/v2/reply?oid=${tId}&type=17&pn=${pageNumber}&jsonp=jsonp&ps=10&callback=jsonp_${new Date().getTime()}_98201`; break;
-                }
-                var ajax = new XMLHttpRequest();
-                ajax.open('get', url);
+                var url = `https://api.bilibili.com/x/v2/reply?callback=jQuery111308328563511816511_${new Date().getTime()}&jsonp=jsonp&pn=${pageNumber}&type=11&oid=${tid}&sort=2&_=1583416507699`;
                 var maxAttemp = 4
 
                 function attempt () {
-                    ajax.send();
-                    ajax.onreadystatechange = function () {
-                        if (ajax.readyState==4 &&ajax.status==200) {
-                            maxAttemp --
-                            var res = JSON.parse(ajax.responseText.replace(/^.*?\(/, '').replace(/\)$/, ''));
-                            res.data.replies = res.data.replies.map(v => {
-                                let {content, member, floor} = v
-                                return v
-                            })
-                            if (res.data.replies.every(v => !v || v.member.uname) || !maxAttemp) {
-                                total = res.data.page.count;
-                                list = list.concat(res.data.replies)
-                                updateProgress(Math.min((pageNumber * 10 / (total || Infinity) * 100), 100).toFixed(0))
-                                rev()
-                            } else {
-                                setTimeout(attempt, 100);
-                            }
-                      　}
-                    }
+                    Ajax.get(url, res => {
+                        maxAttemp --
+                        res = JSON.parse(res.replace(/^.*?\(/, '').replace(/\)$/, ''));
+                        res.data.replies = res.data.replies.map(v => {
+                            let {content, member, floor} = v
+                            return v
+                        })
+                        if (res.data.replies.every(v => !v || v.member.uname) || !maxAttemp) {
+                            total = res.data.page.count;
+                            list = list.concat(res.data.replies)
+                            updateProgress(Math.min((pageNumber * 20 / (total || Infinity) * 100), 100).toFixed(0))
+                            rev()
+                        } else {
+                            setTimeout(attempt, 100);
+                        }
+                    })
                 }
                 attempt()
 
@@ -317,12 +328,12 @@
 
             promise = promise.then(() => new Promise (outerRev => {
 
-                for (var i = 10; i < total; i += 10) {
+                for (var i = 20; i < total; i += 20) {
                     ((index) => {
                         promise = promise.then(() => new Promise ((rev) => {
                             setTimeout(function() {
 
-                                crawl(index / 10 + 1, rev)
+                                crawl(index / 20 + 1, rev)
 
                             }, 100);
                         }))
