@@ -128,10 +128,10 @@
         DOM.style.display = 'block';
         this.currentTweet = (document.querySelector('article') || {}).parentNode
         let article = this.currentTweet.children[0]
-        this.currentTweetHeader = article.children[0].children[1]
+        this.currentTweetHeader = article.children[0].children[0].children[1]
         this.currentTweetOriginalTextWrapper = this.currentTweetHeader.nextSibling
         this.currentTweetOriginalText = this.currentTweetOriginalTextWrapper && this.currentTweetOriginalTextWrapper.firstChild
-        this.timetagNode = article.children[0].children[article.children[0].children.length - 3]
+        this.timetagNode = this.currentTweetOriginalTextWrapper.children[this.currentTweetOriginalTextWrapper.children.length - 3]
         this.timetag = this.timetagNode.firstChild.firstChild.innerText
       } else {
         DOM.style.display = 'none';
@@ -149,9 +149,9 @@
       this.transitionText.contentEditable = 'true';
       this.transitionText.id = 'translate-tool-translation-text'
       this.transitionText.className = this.currentTweetOriginalTextWrapper.className
-      this.transitionText.style = `display: block; width: 100%; font-family: 'Microsoft Yahei'; font-weight: bold; color: #444;border:none;`;
-      this.transitionText.innerHTML = this.currentTweetOriginalText.outerHTML.replace(/href=\".*?\"/g, '');
-      this.currentTweetOriginalTextWrapper.after(this.transitionText)
+      this.transitionText.style = `display: block; width: 100%; font-family: 'Microsoft Yahei'; font-weight: bold; color: #444;border:none; margin-top: 15px;`;
+      this.transitionText.innerHTML = this.currentTweetOriginalText.firstChild.outerHTML.replace(/href=\".*?\"/g, '');
+      this.currentTweetOriginalTextWrapper.children[0].after(this.transitionText)
       let _innerHTML
       if (_innerHTML = sessionStorage[this.timetag]) {
       	this.transitionText.firstChild.innerHTML = _innerHTML;
