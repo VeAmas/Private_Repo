@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Twitter Translate
 // @namespace    http://tampermonkey.net/
-// @version      0.6
+// @version      0.5
 // @description  try to take over the world!
 // @author       Amas.
 // @match        https://twitter.com/*
@@ -259,6 +259,8 @@
   "宝鐘マリン": "宝钟玛琳",
   "風見くく": "风见Kuku",
   "柚原いづみ": "柚原Izumi",
+  "星街すいせい": "星街彗星",
+  "愛宮みるく": "爱宫Milk",
 };
 
   let phraseMap = {
@@ -269,6 +271,7 @@
       "本日": "今天",
       "の配信予定": "的直播日程",
       "のりプロ": "NoriPro",
+      "配信タグ": "直播Tag",
   };
 
   (function () {
