@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Twitter Translate
 // @namespace    http://tampermonkey.net/
-// @version      0.5
+// @version      0.6
 // @description  try to take over the world!
 // @author       Amas.
 // @match        https://twitter.com/*
@@ -293,7 +293,7 @@
         DOM.style.display = 'block';
         this.currentTweet = (document.querySelector('article') || {}).parentNode
         let article = this.currentTweet.children[0]
-        this.currentTweetHeader = article.children[0].children[0].children[1]
+        this.currentTweetHeader = article.children[0].children[1]
         this.currentTweetOriginalTextWrapper = this.currentTweetHeader.nextSibling
         this.currentTweetOriginalText = this.currentTweetOriginalTextWrapper && this.currentTweetOriginalTextWrapper.firstChild
         this.timetagNode = this.currentTweetOriginalTextWrapper.children[this.currentTweetOriginalTextWrapper.children.length - 3]
