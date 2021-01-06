@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Twitter Translate
 // @namespace    http://tampermonkey.net/
-// @version      0.7
+// @version      0.8
 // @require      https://github.com/niklasvh/html2canvas/releases/download/v1.0.0-rc.1/html2canvas.min.js
 // @description  try to take over the world!
 // @author       Amas.
@@ -260,6 +260,8 @@
   "メンバー限定": "会员限定",
   "姫咲ゆずる": "姫咲柚流",
   "熊谷タクマ": "熊谷Takuma",
+  "姫森ルーナ": "姬森璐娜",
+  "鬼灯わらべ": "鬼灯Warabe"
 };
 
   let phraseMap = {
@@ -271,6 +273,7 @@
       "の配信予定": "的直播日程",
       "のりプロ": "NoriPro",
       "配信タグ": "直播Tag",
+      "夜の予定は当日の朝7点にお知らせします": "晚上的日程将于当天早上7点之后公布",
   };
 
   (function () {
@@ -401,4 +404,32 @@
   document.getElementById('resetTranslationText').addEventListener('click', TranslateTool.resetTranslationText.bind(TranslateTool));
   document.getElementById('export').addEventListener('click', TranslateTool.export.bind(TranslateTool));
   setTimeout(() => {window.TranslateTool.isActivated();}, 2000)
+
+
+  document.addEventListener('copy', function(e){
+    const map = [
+        ['带有脸的太阳', '🌞'],
+        ['日本食人魔', '👹'],
+        ['上弦月脸', '🌛'],
+        ['奶瓶', '🍼'],
+        ['闪耀的心', '💖'],
+        ['狗脸', '🐕'],
+        ['蓝心', '💙'],
+        ['雪花', '❄'],
+        ['兔脸', '🐰'],
+        ['写字的手', '✍'],
+        ['熊脸', '🐻'],
+        ['冰淇淋', '🍨']
+    ]
+
+    async function fn () {
+      let text = await navigator.clipboard.readText()
+      map.forEach(v => {
+        const regExp = new RegExp(v[0], 'g')
+        text = text.replace(regExp, v[1])
+      })
+      console.log(text)
+    }
+    fn()
+  });
 })();
